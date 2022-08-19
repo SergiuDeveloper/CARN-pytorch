@@ -45,6 +45,8 @@ class Solver():
         
         
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        print(f"Training on {self.device}")
+        
         self.refiner = self.refiner.to(self.device)
         self.loss_fn = self.loss_fn
 
