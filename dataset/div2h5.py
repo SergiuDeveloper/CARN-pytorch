@@ -1,10 +1,15 @@
 import os
+import sys
 import glob
 import h5py
 import imageio
 import numpy as np
 
-dataset_dir = "DIV2K/"
+
+COLAB = 'google.colab' in sys.modules
+
+
+dataset_dir = "/content/drive/My Drive/Dissertation/Datasets/DIV2K" if COLAB else "DIV2K/"
 dataset_type = "train"
 
 f = h5py.File("DIV2K_{}.h5".format(dataset_type), "w")

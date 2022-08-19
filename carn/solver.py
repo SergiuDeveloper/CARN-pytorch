@@ -1,4 +1,5 @@
 import os
+import sys
 import random
 import numpy as np
 import scipy.misc as misc
@@ -10,6 +11,10 @@ import torch.optim as optim
 from torch.utils.data import DataLoader
 from dataset import TrainDataset, TestDataset
 from datetime import datetime
+
+
+COLAB = 'google.colab' in sys.modules
+
 
 class Solver():
     def __init__(self, model, cfg):
@@ -93,11 +98,12 @@ class Solver():
                 
                 self.step += 1
                 if cfg.verbose and self.step % cfg.print_interval == 0:
+                    urban_dataset_path = "/content/drive/My Drive/Dissertation/Datasets/Urban100" if COLAB else "dataset/Urban100"
                     if cfg.scale > 0:
-                        psnr = self.evaluate("dataset/Urban100", scale=cfg.scale, num_step=self.step)
+                        psnr = self.evaluate(urban_dataset_path, scale=cfg.scale, num_step=self.step)
                         self.writer.add_scalar("Urban100", psnr, self.step)
                     else:    
-                        psnr = [self.evaluate("dataset/Urban100", scale=i, num_step=self.step) for i in range(2, 5)]
+                        psnr = [self.evaluate(urban_dataset_path, scale=i, num_step=self.step) for i in range(2, 5)]
                         self.writer.add_scalar("Urban100_2x", psnr[0], self.step)
                         self.writer.add_scalar("Urban100_3x", psnr[1], self.step)
                         self.writer.add_scalar("Urban100_4x", psnr[2], self.step)
@@ -105,7 +111,7 @@ class Solver():
                     current_time = datetime.now()
                     print(f"Step {self.step}")
                     print(f"Elapsed Time: {current_time - start_time}")
-                    print(f"Training Dataset PSNR: {loss}")
+                    print(f"Training Dataset Loss: {loss}")
                     print(f"Validation Dataset PSNR: {psnr}")
                     print()
                             
