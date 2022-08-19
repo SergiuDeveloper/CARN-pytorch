@@ -1,7 +1,7 @@
 import os
 import glob
 import h5py
-import scipy.misc as misc
+import imageio
 import numpy as np
 
 dataset_dir = "DIV2K/"
@@ -15,7 +15,6 @@ for subdir in ["HR", "X2", "X3", "X4"]:
         im_paths = glob.glob(os.path.join(dataset_dir, 
                                           "DIV2K_{}_HR".format(dataset_type), 
                                           "*.png"))
-
     else:
         im_paths = glob.glob(os.path.join(dataset_dir, 
                                           "DIV2K_{}_LR_bicubic".format(dataset_type), 
@@ -24,6 +23,6 @@ for subdir in ["HR", "X2", "X3", "X4"]:
     grp = f.create_group(subdir)
 
     for i, path in enumerate(im_paths):
-        im = misc.imread(path)
+        im = imageio.imread(path)
         print(path)
         grp.create_dataset(str(i), data=im)

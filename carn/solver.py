@@ -2,13 +2,14 @@ import os
 import random
 import numpy as np
 import scipy.misc as misc
-import skimage.measure as measure
+import skimage.metrics as metrics
 from tensorboardX import SummaryWriter
 import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
 from dataset import TrainDataset, TestDataset
+from datetime import datetime
 
 class Solver():
     def __init__(self, model, cfg):
@@ -29,14 +30,14 @@ class Solver():
         self.optim = optim.Adam(
             filter(lambda p: p.requires_grad, self.refiner.parameters()), 
             cfg.lr)
-        
         self.train_data = TrainDataset(cfg.train_data_path, 
                                        scale=cfg.scale, 
                                        size=cfg.patch_size)
         self.train_loader = DataLoader(self.train_data,
                                        batch_size=cfg.batch_size,
-                                       num_workers=1,
-                                       shuffle=True, drop_last=True)
+                                       num_workers=0,
+                                       shuffle=True,
+                                       drop_last=True)
         
         
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -61,6 +62,7 @@ class Solver():
                                   device_ids=range(cfg.num_gpu))
         
         learning_rate = cfg.lr
+        start_time = datetime.now()
         while True:
             for inputs in self.train_loader:
                 self.refiner.train()
@@ -99,6 +101,13 @@ class Solver():
                         self.writer.add_scalar("Urban100_2x", psnr[0], self.step)
                         self.writer.add_scalar("Urban100_3x", psnr[1], self.step)
                         self.writer.add_scalar("Urban100_4x", psnr[2], self.step)
+
+                    current_time = datetime.now()
+                    print(f"Step {self.step}")
+                    print(f"Elapsed Time: {current_time - start_time}")
+                    print(f"Training Dataset PSNR: {loss}")
+                    print(f"Validation Dataset PSNR: {psnr}")
+                    print()
                             
                     self.save(cfg.ckpt_dir, cfg.ckpt_name)
 
@@ -186,5 +195,5 @@ def psnr(im1, im2):
         
     im1 = im2double(im1)
     im2 = im2double(im2)
-    psnr = measure.compare_psnr(im1, im2, data_range=1)
+    psnr = metrics.peak_signal_noise_ratio(im1, im2, data_range=1)
     return psnr

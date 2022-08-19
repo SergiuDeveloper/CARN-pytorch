@@ -8,10 +8,10 @@ from solver import Solver
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--model", type=str)
-    parser.add_argument("--ckpt_name", type=str)
+    parser.add_argument("--model", type=str, default="carn")
+    parser.add_argument("--ckpt_name", type=str, default="carn_last")
     
-    parser.add_argument("--print_interval", type=int, default=1000)
+    parser.add_argument("--print_interval", type=int, default=10)
     parser.add_argument("--train_data_path", type=str, 
                         default="dataset/DIV2K_train.h5")
     parser.add_argument("--ckpt_dir", type=str,
@@ -21,15 +21,15 @@ def parse_args():
     
     parser.add_argument("--num_gpu", type=int, default=1)
     parser.add_argument("--shave", type=int, default=20)
-    parser.add_argument("--scale", type=int, default=2)
+    parser.add_argument("--scale", type=int, default=4)
 
     parser.add_argument("--verbose", action="store_true", default="store_true")
 
     parser.add_argument("--group", type=int, default=1)
     
     parser.add_argument("--patch_size", type=int, default=64)
-    parser.add_argument("--batch_size", type=int, default=64)
-    parser.add_argument("--max_steps", type=int, default=200000)
+    parser.add_argument("--batch_size", type=int, default=32)
+    parser.add_argument("--max_steps", type=int, default=100)
     parser.add_argument("--decay", type=int, default=150000)
     parser.add_argument("--lr", type=float, default=0.0001)
     parser.add_argument("--clip", type=float, default=10.0)
@@ -38,7 +38,7 @@ def parse_args():
                         choices=["MSE", "L1", "SmoothL1"], default="L1")
 
     return parser.parse_args()
-
+ 
 def main(cfg):
     # dynamic import using --model argument
     net = importlib.import_module("model.{}".format(cfg.model)).Net
