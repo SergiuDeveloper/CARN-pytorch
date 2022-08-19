@@ -1,12 +1,11 @@
 import os
-import sys
 import glob
 import h5py
 import imageio
 import numpy as np
 
 
-COLAB = 'google.colab' in sys.modules
+COLAB = 'COLAB_GPU' in os.environ
 
 
 dataset_dir = "/content/drive/My Drive/Dissertation/Datasets/DIV2K" if COLAB else "DIV2K/"

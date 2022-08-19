@@ -1,5 +1,4 @@
 import os
-import sys
 import random
 import numpy as np
 import scipy.misc as misc
@@ -13,7 +12,7 @@ from dataset import TrainDataset, TestDataset
 from datetime import datetime
 
 
-COLAB = 'google.colab' in sys.modules
+COLAB = 'COLAB_GPU' in os.environ
 
 
 class Solver():
